@@ -1,0 +1,11 @@
+{
+    "name": "AppConfigurations",
+    "alias": "appconfigurations",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        
+    ],
+    "files": []
+}

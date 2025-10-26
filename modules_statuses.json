@@ -1,5 +1,6 @@
 {
     "Core": true,
     "Users": true,
-    "Auth": true
+    "Auth": true,
+    "AppConfigurations": true
 }
