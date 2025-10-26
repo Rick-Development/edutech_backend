@@ -2,5 +2,7 @@
     "Core": true,
     "Users": true,
     "Auth": true,
-    "AppConfigurations": true
+    "AppConfigurations": true,
+    "Courses": true,
+    "Enrollment": true
 }

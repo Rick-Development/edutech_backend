@@ -22,6 +22,10 @@ return Application::configure(basePath: dirname(__DIR__))
         // Force all API routes to return JSON
         $middleware->append(\App\Http\Middleware\ForceJsonResponse::class);
     })
+    ->withProviders([
+    \Modules\Enrollment\Providers\EnrollmentServiceProvider::class,
+    // Add other modules as you build them
+])
     ->withExceptions(function (Exceptions $exceptions) {
 
         // 🔥 Handle AuthenticationException (token expired or invalid)
