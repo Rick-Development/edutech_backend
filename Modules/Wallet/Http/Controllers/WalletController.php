@@ -16,7 +16,7 @@ class WalletController extends Controller
     {
         $user = request()->user();
         $wallet = Wallet::firstOrCreate(['user_id' => $user->id]);
-        return $this->success(['balance' => $wallet->balance]);
+        return $this->success(['balance' => $wallet->balance ?? 0.00]);
     }
 
     public function getTransactions()
