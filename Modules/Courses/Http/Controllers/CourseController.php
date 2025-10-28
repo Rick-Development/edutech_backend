@@ -5,6 +5,7 @@ namespace Modules\Courses\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Modules\Core\Traits\ApiResponse;
 use Modules\Courses\Models\Course;
+use  Modules\Enrollment\Models\Enrollment;
 
 class CourseController extends Controller
 {
@@ -13,6 +14,10 @@ class CourseController extends Controller
     public function index()
     {
         $courses = Course::where('status', 'active')->get();
+
+        foreach($courses as $course){
+            $course['enrolled'] = Enrollment::where('course_id',$course->id )->exists() ? true : false;
+        }
         return $this->success($courses);
     }
 
@@ -22,6 +27,8 @@ class CourseController extends Controller
         if (!$course) {
             return $this->error('Course not found', 404);
         }
+        $course['enrolled'] = Enrollment::where('course_id',$course->id )->exists() ? true : false;
         return $this->success($course);
     }
+
 }

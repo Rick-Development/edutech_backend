@@ -4,5 +4,6 @@
     "Auth": true,
     "AppConfigurations": true,
     "Courses": true,
-    "Enrollment": true
+    "Enrollment": true,
+    "Wallet": true
 }
