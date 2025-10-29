@@ -11,9 +11,12 @@ Route::prefix('wallet')->middleware('auth:sanctum')->group(function () {
     Route::get('/transactions', [WalletController::class, 'getTransactions']);
 
     // Deposits
-    Route::post('/deposit', [DepositController::class, 'requestDeposit']);
+    // Route::get('/payment-methods', [DepositController::class, 'getPaymentMethods']);
+    // Route::post('/payment-methods', [DepositController::class, 'createPaymentMethod']);
+    Route::post('/deposit', [DepositController::class, 'deposit']);
+
 
     // Withdrawals
-    Route::post('/withdraw', [WithdrawalController::class, 'requestWithdrawal']);
+    Route::post('/withdraw', [WithdrawalController::class, 'initiateTransfer']);
     Route::get('/withdrawals', [WithdrawalController::class, 'getWithdrawalRequests']);
 });

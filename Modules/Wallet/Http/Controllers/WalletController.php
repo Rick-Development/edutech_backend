@@ -5,6 +5,7 @@ namespace Modules\Wallet\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Modules\Core\Traits\ApiResponse;
 use Modules\Wallet\Models\Wallet;
+use Illuminate\Http\Request;
 use Modules\Wallet\Models\Transaction;
 use Modules\Wallet\Models\WithdrawalRequest;
 

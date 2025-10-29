@@ -11,6 +11,7 @@ use Modules\Auth\app\Http\Requests\RegisterRequest;
 use Modules\Auth\Models\BiometricToken;
 use Modules\Core\Traits\ApiResponse;
 use Modules\Users\Models\User;
+use Modules\Wallet\Services\FlutterwaveService;
 
 class AuthController extends Controller
 {
@@ -31,7 +32,13 @@ class AuthController extends Controller
 
         // Create Sanctum token for immediate login
         $token = $user->createToken('auth_token')->plainTextToken;
-
+        
+            $flutterwave = new FlutterwaveService();
+            $response = $flutterwave->createCustomer([
+               'email' => $user->email,
+            ]);
+            $user->customer_id = $response['data']['id'];
+            $user->save();
         return $this->success([
             // 'user' => $user,
             'access_token' => $token,
@@ -53,6 +60,16 @@ class AuthController extends Controller
         if (!$user || !Hash::check($request->password, $user->password)) {
             return $this->error('Invalid credentials', 401);
         }
+
+        if($user->customer_id == null) {
+            $flutterwave = new FlutterwaveService();
+            $response = $flutterwave->createCustomer([
+               'email' => $user->email,
+            ]);
+            $user->customer_id = $response['data']['id'];
+            $user->save();
+        }
+
 
         // Revoke old tokens (optional: keep last 3)
         $user->tokens()->delete();
