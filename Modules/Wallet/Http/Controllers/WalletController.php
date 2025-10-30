@@ -32,4 +32,11 @@ class WalletController extends Controller
             ->get();
         return $this->success($transactions);
     }
+
+
+public function webhook(Request $request){
+    \Log::info($request->all());
+}
+
+
 }

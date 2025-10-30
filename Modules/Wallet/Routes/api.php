@@ -19,4 +19,9 @@ Route::prefix('wallet')->middleware('auth:sanctum')->group(function () {
     // Withdrawals
     Route::post('/withdraw', [WithdrawalController::class, 'initiateTransfer']);
     Route::get('/withdrawals', [WithdrawalController::class, 'getWithdrawalRequests']);
+
+
+    //Webhook
+    Route::post('/webhook', [WalletController::class, 'webhook']);
+
 });
