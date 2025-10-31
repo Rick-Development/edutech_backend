@@ -129,10 +129,11 @@ public function deposit(Request $request)
     ]);
     
     try {
+        $reference = 'DEP' . strtoupper(uniqid());
          $data = [
             "currency" => "NGN",
             "account_type" => "dynamic",
-            "reference" => 'DEP' . strtoupper(uniqid()), // unique reference for the virtual account max
+            "reference" => $reference, // unique reference for the virtual account max
             "customer_id" => $user->customer_id,
             "amount" => $requestData['amount'],
             "expiry" => 600
@@ -141,6 +142,22 @@ public function deposit(Request $request)
         $response = $flutterwave->createVirtualAccount($data);
 
         if (isset($response['status']) && $response['status'] === 'success') {
+
+        $wallet = Wallet::firstOrCreate(['user_id' => $user->id]);
+            // $wallet->decrement('balance', $request->amount);
+            $wallet->increment('pending_balance', $request->amount);
+            $wallet->save();
+
+        Transaction::create([
+            'wallet_id' => $wallet->id,
+            'type' => 'deposit',
+            'amount' => $requestData['amount'],
+            'status' => 'pending',
+            'reference' => $reference,
+            'description' => 'Deposit Through Dynamic Virtual Account',
+            'meta' => $data,
+        ]);
+
             return $this->success($response, $response['message']);
         }
 

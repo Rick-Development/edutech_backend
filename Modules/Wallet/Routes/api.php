@@ -17,6 +17,8 @@ Route::prefix('wallet')->middleware('auth:sanctum')->group(function () {
 
 
     // Withdrawals
+    Route::get('/banks', [WithdrawalController::class, 'getBanks']);
+    Route::post('/resolve', [WithdrawalController::class, 'resolveAccount']);
     Route::post('/withdraw', [WithdrawalController::class, 'initiateTransfer']);
     Route::get('/withdrawals', [WithdrawalController::class, 'getWithdrawalRequests']);
 

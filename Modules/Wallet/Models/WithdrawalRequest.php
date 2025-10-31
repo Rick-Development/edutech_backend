@@ -12,6 +12,7 @@ class WithdrawalRequest extends CoreModel
         'account_number',
         'account_name',
         'bank_name',
+        'reference',
         'status', // 'pending', 'approved', 'rejected'
     ];
 

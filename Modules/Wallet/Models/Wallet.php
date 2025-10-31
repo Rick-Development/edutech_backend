@@ -6,10 +6,11 @@ use Modules\Core\Models\CoreModel;
 
 class Wallet extends CoreModel
 {
-    protected $fillable = ['user_id', 'balance'];
+    protected $fillable = ['user_id', 'balance','pending_balance'];
 
     protected $casts = [
         'balance' => 'decimal:2',
+        'pending_balance' => 'decimal:2',
     ];
 
     public function user()

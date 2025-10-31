@@ -169,5 +169,19 @@ class FlutterwaveService
         ]);
     }
 
+    public function getBanks(): array
+    {
+        $country = 'NG';
+        return $this->makeAuthenticatedRequest('GET', 'banks', [
+            'query' => ['country' => $country]
+        ]);
+    }
+
+    public function resolveAccount(array $data): array
+    {
+        return $this->makeAuthenticatedRequest('POST', 'banks/account-resolve', [
+            'json' => $data
+        ]);
+    }
 
 }
