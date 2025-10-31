@@ -23,7 +23,7 @@ Route::prefix('wallet')->middleware('auth:sanctum')->group(function () {
     Route::get('/withdrawals', [WithdrawalController::class, 'getWithdrawalRequests']);
 
 
-    //Webhook
-    Route::post('/webhook', [WalletController::class, 'webhook']);
 
 });
+    //Webhook
+    Route::post('/webhook', [WalletController::class, 'webhook']);
