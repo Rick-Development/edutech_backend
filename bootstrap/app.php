@@ -21,6 +21,16 @@ return Application::configure(basePath: dirname(__DIR__))
 
         // Force all API routes to return JSON
         $middleware->append(\App\Http\Middleware\ForceJsonResponse::class);
+        // $middleware->append(\App\Http\Middleware\ClearOldPendingTransactions::class);
+
+        $middleware->api(prepend: [
+        // Ensures it runs before your custom middleware
+        \Laravel\Sanctum\Http\Middleware\AuthenticateSession::class, 
+        ],
+     append: [
+        // Your logic to check and clear transactions
+        \App\Http\Middleware\ClearOldPendingTransactions::class,
+    ]);
     })
     ->withProviders([
     \Modules\Enrollment\Providers\EnrollmentServiceProvider::class,
