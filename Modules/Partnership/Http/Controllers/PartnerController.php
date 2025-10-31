@@ -7,6 +7,11 @@ use Illuminate\Support\Str;
 use Modules\Core\Traits\ApiResponse;
 use Modules\Partnership\Models\PartnerApplication;
 use Modules\Users\Models\User;
+use Illuminate\Http\Request;
+use Modules\Partnership\Http\Requests\ApproveRequest;
+use Modules\Referral\Models\Referral;
+use Modules\Enrollment\Models\Enrollment;
+
 
 class PartnerController extends Controller
 {
@@ -22,9 +27,9 @@ class PartnerController extends Controller
             return $this->error('You have already applied', 409);
         }
 
-        if ($user->referral_code) {
-            return $this->error('You are already a partner', 409);
-        }
+        // if ($user->referral_code) {
+        //     return $this->error('You are already a partner', 409);
+        // }
 
         PartnerApplication::create([
             'user_id' => $user->id,
@@ -35,28 +40,28 @@ class PartnerController extends Controller
     }
 
     // Admin approves/rejects applications
-    public function processApplication(\Modules\Partnership\Http\Requests\ApproveRequest $request)
+    public function processApplication(Request $request)
     {
         $admin = $request->user();
         $application = PartnerApplication::findOrFail($request->application_id);
 
-        if ($request->action === 'approve') {
-            // Generate unique referral code
-            $referralCode = 'WCTI' . strtoupper(Str::random(6));
-            while (User::where('referral_code', $referralCode)->exists()) {
-                $referralCode = 'WCTI' . strtoupper(Str::random(6));
-            }
+       if ($request->action === 'approve') {
+            $user = $application->user;
+            // In PartnerController.php
+            $partnershipCode = 'PTN' . date('Ymd') . str_pad($application->id, 4, '0', STR_PAD_LEFT);
 
-            // Update user
-            $application->user->update(['referral_code' => $referralCode]);
-
-            // Approve application
+            // Mark as approved partner (no new code needed)
             $application->update([
                 'status' => 'approved',
                 'approved_by' => $admin->id,
+                'partnership_code' => $partnershipCode,
             ]);
 
-            return $this->success(null, 'Partner approved. Referral code assigned.');
+            // User keeps same referral_code, but now earns ₦200
+            return $this->success([
+                'referral_code' => $user->referral_code,
+                'commission_rate' => 200, // Upgraded rate
+            ]);
         }
 
         if ($request->action === 'reject') {
@@ -95,4 +100,52 @@ class PartnerController extends Controller
 
         return $this->success($applications);
     }
+
+
+
+public function getDashboard()
+{
+    $user = request()->user();
+
+    // 1. Check if user is an approved partner
+    $application = PartnerApplication::where('user_id', $user->id)
+        ->where('status', 'approved')
+        ->first();
+
+    if (!$application) {
+        return $this->error('Access denied. You are not an approved partner.', 403);
+    }
+
+    // 2. Get referral stats
+    $totalReferrals = Referral::where('referrer_id', $user->id)->count();
+    
+    $pendingCommissions = Referral::where('referrer_id', $user->id)
+        ->where('status', 'pending')
+        ->sum('commission_amount');
+
+    $paidCommissions = Referral::where('referrer_id', $user->id)
+        ->where('status', 'paid')
+        ->sum('commission_amount');
+
+    // 3. Get active students (referred users with active enrollments)
+    $activeStudents = Referral::join('enrollments', 'referrals.referred_id', '=', 'enrollments.user_id')
+        ->where('referrals.referrer_id', $user->id)
+        ->where('enrollments.status', 'active')
+        ->count();
+
+    // 4. Sub-affiliates (optional: partners referred by this partner)
+    // For now, we'll skip sub-affiliates (can add later)
+
+    return $this->success([
+        'referral_link' => url('/r/' . $user->referral_code),
+        'partnership_code' => $application->partnership_code,
+        'total_referrals' => $totalReferrals,
+        'active_students' => $activeStudents,
+        'pending_commissions' => (float) $pendingCommissions,
+        'paid_commissions' => (float) $paidCommissions,
+        'can_withdraw' => $pendingCommissions >= 1000, // Min withdrawal threshold
+    ]);
+}
+
+
 }

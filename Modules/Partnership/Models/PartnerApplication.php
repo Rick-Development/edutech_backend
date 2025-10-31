@@ -11,10 +11,11 @@ class PartnerApplication extends CoreModel
         'status', // 'pending', 'approved', 'rejected'
         'reason_for_rejection',
         'approved_by', // admin user ID
+        'partnership_code'
     ];
 
     protected $casts = [
-        'approved_by' => 'uuid',
+       'approved_by' => 'string',
     ];
 
     public function user()
