@@ -26,4 +26,4 @@ Route::prefix('wallet')->middleware('auth:sanctum')->group(function () {
 
 });
     //Webhook
-    Route::post('/webhook', [WalletController::class, 'webhook']);
+    Route::post('/wallet/webhook', [WalletController::class, 'webhook']);

@@ -20,6 +20,8 @@ class User extends CoreModel
         'phone',
         'role', // 'student', 'mentor', 'partner', 'admin'
         'is_biometric_enabled',
+        'referral_code',
+        'referrer_id',
     ];
 
     protected $hidden = [

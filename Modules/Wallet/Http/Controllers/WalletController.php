@@ -71,7 +71,7 @@ class WalletController extends Controller
         $transactions = Transaction::where('wallet_id', $wallet->id)
             ->orderBy('created_at', 'desc')
             ->get();
-        return $this->success($transactions);
+        return $this->success($transactions->toArray());
     }
 
 

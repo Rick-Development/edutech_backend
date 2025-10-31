@@ -12,6 +12,9 @@ use Modules\Auth\Models\BiometricToken;
 use Modules\Core\Traits\ApiResponse;
 use Modules\Users\Models\User;
 use Modules\Wallet\Services\FlutterwaveService;
+use Illuminate\Support\Str;
+use Modules\Referral\Models\Referral;
+
 
 class AuthController extends Controller
 {
@@ -20,6 +23,10 @@ class AuthController extends Controller
     // 1. USER REGISTRATION
     public function register(RegisterRequest $request)
     {
+        $referrer = null;
+        if ($request->filled('referral_code')) {
+            $referrer = User::where('referral_code', $request->referral_code)->first();
+        }
         $user = User::create([
             'firstname' => $request->firstname,
             'lastname' => $request->lastname,
@@ -28,8 +35,19 @@ class AuthController extends Controller
             'phone' => $request->phone,
             'password' => $request->password,
             'role' => User::ROLE_STUDENT, // Default role
+            'referral_code' => 'WCTI' . strtoupper(Str::random(6)),
+            'referrer_id' => $referrer?->id, // 👈 STORE REFERRER
+            
         ]);
 
+        if($referrer){
+            Referral::create([
+                'referrer_id' => $referrer->id,
+                'referred_id' => $user->id,
+                'commission_amount' => 500, // Initial commission
+                'status' => 'pending',
+            ]);
+        }
         // Create Sanctum token for immediate login
         $token = $user->createToken('auth_token')->plainTextToken;
         
@@ -40,9 +58,7 @@ class AuthController extends Controller
             $user->customer_id = $response['data']['id'];
             $user->save();
         return $this->success([
-            // 'user' => $user,
             'access_token' => $token,
-            // 'token_type' => 'Bearer',
         ], 'Registration successful. Welcome to Wavecrest!');
     }
 
@@ -68,6 +84,20 @@ class AuthController extends Controller
             ]);
             $user->customer_id = $response['data']['id'];
             $user->save();
+        }
+
+        if(!$user->referral_code) {
+            // Generate a unique referral code
+            
+            // Generate code: WCTI + last 6 of UUID or random string
+            $referralCode = 'WCTI' . strtoupper(Str::random(6));
+
+            // Ensure uniqueness
+            while (User::where('referral_code', $referralCode)->exists()) {
+                $referralCode = 'WCTI' . strtoupper(Str::random(6));
+            }
+
+            $user->update(['referral_code' => $referralCode]);
         }
 
 

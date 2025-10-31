@@ -5,5 +5,7 @@
     "AppConfigurations": true,
     "Courses": true,
     "Enrollment": true,
-    "Wallet": true
+    "Wallet": true,
+    "Referral": true,
+    "Partnership": true
 }
