@@ -27,6 +27,8 @@ class AuthController extends Controller
         if ($request->filled('referral_code')) {
             $referrer = User::where('referral_code', $request->referral_code)->first();
         }
+
+        $category = $request->category ?? User::CATEGORY_REGULAR; // Default to regular
         $user = User::create([
             'firstname' => $request->firstname,
             'lastname' => $request->lastname,
@@ -37,6 +39,7 @@ class AuthController extends Controller
             'role' => User::ROLE_STUDENT, // Default role
             'referral_code' => 'WCTI' . strtoupper(Str::random(6)),
             'referrer_id' => $referrer?->id, // 👈 STORE REFERRER
+            'category' => $category, // 👈 STORE CATEGORY
             
         ]);
 

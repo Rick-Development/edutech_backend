@@ -22,6 +22,7 @@ class User extends CoreModel
         'is_biometric_enabled',
         'referral_code',
         'referrer_id',
+        'category',  // 'regular', 'corps_member', 'vip'
     ];
 
     protected $hidden = [
@@ -39,6 +40,23 @@ class User extends CoreModel
     public const ROLE_MENTOR = 'mentor';
     public const ROLE_PARTNER = 'partner';
     public const ROLE_ADMIN = 'admin';
+
+
+    // Add constants for safety
+    const CATEGORY_REGULAR = 'regular';
+    const CATEGORY_CORPS = 'corps_member';
+    const CATEGORY_VIP = 'vip';
+
+    // Optional: Helper methods
+    public function isVip(): bool
+    {
+        return $this->category === self::CATEGORY_VIP;
+    }
+
+    public function isCorpsMember(): bool
+    {
+        return $this->category === self::CATEGORY_CORPS;
+    }
 
     public function isStudent(): bool
     {
