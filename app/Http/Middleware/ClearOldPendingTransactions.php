@@ -60,7 +60,7 @@ class ClearOldPendingTransactions
                 // 4. Mark the transaction as failed
                 $transaction->update([
                     'status' => 'failed',
-                    'description' => "Failed automatically by middleware for user {$user->id}: Payment not completed within {$minutes} minute window. Pending balance cleared."
+                    // 'description' => "Failed automatically by middleware for user {$user->id}: Payment not completed within {$minutes} minute window. Pending balance cleared."
                 ]);
                 
                 $failedCount++;
